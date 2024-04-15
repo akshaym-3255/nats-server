@@ -3875,7 +3875,6 @@ func (n *raft) processVoteRequest(vr *voteRequest) error {
 	}
 
 	n.Lock()
-	n.resetElectionTimeout()
 
 	vresp := &voteResponse{n.term, n.id, false}
 	defer n.debug("Sending a voteResponse %+v -> %q", vresp, vr.reply)
@@ -3907,6 +3906,7 @@ func (n *raft) processVoteRequest(vr *voteRequest) error {
 		n.term = vr.term
 		n.vote = vr.candidate
 		n.writeTermVote()
+		n.resetElectionTimeout()
 	} else {
 		if vr.term >= n.term && n.vote == noVote {
 			n.term = vr.term
