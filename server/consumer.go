@@ -463,13 +463,13 @@ func setConsumerConfigDefaults(config *ConsumerConfig, streamCfg *StreamConfig, 
 	}
 	if config.MaxAckPending == 0 {
 		if pedantic && streamCfg.ConsumerLimits.MaxAckPending > 0 {
-			return NewJSPedanticError(errors.New("max_ack_pending must be set"))
+			return NewJSPedanticError(errors.New("max_ack_pending must be set if it's configured in stream limits"))
 		}
 		config.MaxAckPending = streamCfg.ConsumerLimits.MaxAckPending
 	}
 	if config.InactiveThreshold == 0 {
-		if streamCfg.ConsumerLimits.InactiveThreshold > 0 && pedantic {
-			return NewJSPedanticError(errors.New("inactive_threshold must be set if limits are set"))
+		if pedantic && streamCfg.ConsumerLimits.InactiveThreshold > 0 {
+			return NewJSPedanticError(errors.New("inactive_threshold must be set if it's configured in stream limits"))
 		}
 		config.InactiveThreshold = streamCfg.ConsumerLimits.InactiveThreshold
 	}
@@ -487,7 +487,7 @@ func setConsumerConfigDefaults(config *ConsumerConfig, streamCfg *StreamConfig, 
 	// if applicable set max request batch size
 	if config.DeliverSubject == _EMPTY_ && config.MaxRequestBatch == 0 && lim.MaxRequestBatch > 0 {
 		if pedantic {
-			return NewJSPedanticError(errors.New("max_request_batch must be set if limits are set"))
+			return NewJSPedanticError(errors.New("max_request_batch must be set if it's JetStream limits are set"))
 		}
 		config.MaxRequestBatch = lim.MaxRequestBatch
 	}
